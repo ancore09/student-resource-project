@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <link rel="stylesheet" href="/styleChat.css">
+    <script type="text/javascript">
+        window.onload = function(){
+          document.getElementById('messages').scrollTop = 9999;
+        }
+         </script>
+      
+  </head>
+  <body>
+      <a href="/about">ddddd</a>
+    <input type="text" id="nick" value="">
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+      $(function () {
+        var socket = io();
+        $('form').submit(function(e){
+          e.preventDefault(); // prevents page reloading
+          document.getElementById('messages').scrollTop = 99999;
+          socket.emit('chat message', $('#m').val());
+          $('#m').val('');
+          return false;
+        });
+        socket.on('chat message', function(msg, nick){
+            $('#messages').append($('<li>').text(nick + ': ' + msg));
+            document.getElementById('messages').scrollTop = 99999;  
+        });
+      });
+    </script>
+  </body>
+</html>
