@@ -2,16 +2,67 @@
 	<html>
 		<head>
 			<meta charset="UTF-8">
+			<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 			<title>Document</title>
 		</head>
 		<body>
-			<table border="1px" style="padding: 0px;">
+			<form name="userForm">
+				<input type="hidden" name="id" value="0" />
+				<div class="form-group">
+						<label for="login">Login</label>
+						<input class="form-control" name="name" />
+				</div>
+				<div class="form-group">
+						<label for="pass">Password</label>
+						<input class="form-control" name="age" />
+				</div>
+				<div class="panel-body">
+						<button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+						<a id="reset" class="btn btn-sm btn-primary">Сбросить</a>
+				</div>
+			</form>
+			<table class="table table-condensed table-striped table-bordered">
 				<thead>
-					<tr><th>Name</th><th>Something</th></tr>
+					<tr><th>Id</th><th>Login</th><th>Password</th></tr>
 				</thead>
 				<tbody>
-
 				</tbody>
 			</table>
+			<script>
+				function getUsers() {
+					$.ajax({
+						url: "/users",
+						type: "GET",
+						contentType: "application/json",
+						success: function(users) {
+							var rows = "";
+							$.each(users, function(index, user) {
+								rows += row(user);
+							})
+							$("table tbody").append(rows);
+						}
+					});
+				}
+
+				var row = function(user) {
+					return "<tr data-rowid='" + user._id + "'><td>" + user._id + "</td>" +
+                 "<td>" + user.login + "</td> <td>" + user.pass + "</td>" +
+                 "<td><a class='editLink' data-id='" + user._id + "'>Изменить</a> | " +
+                 "<a class='removeLink' data-id='" + user._id + "'>Удалить</a></td></tr>";
+				}
+
+				$("form").submit(function (e) {
+          e.preventDefault();
+          var id = this.elements["id"].value;
+          var name = this.elements["name"].value;
+          var age = this.elements["age"].value;
+          if (id == 0)
+						CreateUser(name, age);
+				  else
+            EditUser(id, name, age);
+				});
+				
+				getUsers();
+			</script>
 		</body>
 	</html>

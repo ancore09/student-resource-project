@@ -1,11 +1,13 @@
 const express = require('express');
 var app = express();
 const bodyParser = require("body-parser");
+//const jsonParser = express.json();
 const urlencodedParser = bodyParser.urlencoded({extended: false});
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var port = 3000;
 const MongoClient = require('mongodb').MongoClient;
+const objectId = require('mongodb').ObjectID;
 
 var nickname;
 
@@ -76,8 +78,25 @@ app.post("/chat", urlencodedParser, function (request, response) {
   });
 });
 
-app.get('/about', function(req, res){
+app.get('/about', function(req, res) {
   res.sendFile(__dirname + '/index1.html');
+});
+
+app.get('/table', function(req, res) {
+  res.sendFile(__dirname + '/table.html');
+});
+
+app.get('/users', function(req, res) {
+  const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
+  mongoClient.connect(function(err, client) {
+    if (err) return console.log(err);
+    const db = client.db("userdb");
+    const collection = db.collection("users"); 
+    collection.find().toArray(function(err, users){
+      if (err) return console.log(err);
+      res.send(users);
+    });
+  });
 });
 
 io.on('connection', function(socket) {
