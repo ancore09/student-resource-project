@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 //const jsonParser = express.json();
 const urlencodedParser = bodyParser.urlencoded({extended: false});
 var http = require('http').createServer(app);
-var io = require('socket.io')(http);
+//var io = require('socket.io')(http);
 var port = 3000;
 const MongoClient = require('mongodb').MongoClient;
 const objectId = require('mongodb').ObjectID;
@@ -86,6 +86,10 @@ app.get('/table', function(req, res) {
   res.sendFile(__dirname + '/table.html');
 });
 
+app.get('/tableCreate', function(req, res) {
+  res.sendFile(__dirname + 'tableCreate.html');
+});
+
 app.get('/users', function(req, res) {
   const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
   mongoClient.connect(function(err, client) {
@@ -95,16 +99,17 @@ app.get('/users', function(req, res) {
     collection.find().toArray(function(err, users){
       if (err) return console.log(err);
       res.send(users);
+      client.close();
     });
   });
 });
 
-io.on('connection', function(socket) {
+/*io.on('connection', function(socket) {
   socket.username = nickname;
     socket.on('chat message', function(msg) {
         io.emit('chat message', msg, socket.username);
     });
-});
+});*/
 http.listen(port, function(){
   console.log('listening on *:' + port);
 });

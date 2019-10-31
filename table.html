@@ -6,7 +6,7 @@
 			<title>Document</title>
 		</head>
 		<body>
-			<form name="userForm">
+			<!--<form name="userForm">
 				<input type="hidden" name="id" value="0" />
 				<div class="form-group">
 						<label for="login">Login</label>
@@ -20,8 +20,8 @@
 						<button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
 						<a id="reset" class="btn btn-sm btn-primary">Сбросить</a>
 				</div>
-			</form>
-			<table class="table table-condensed table-striped table-bordered">
+			</form>-->
+			<table border="1px">
 				<thead>
 					<tr><th>Id</th><th>Login</th><th>Password</th></tr>
 				</thead>
@@ -38,7 +38,7 @@
 							var rows = "";
 							$.each(users, function(index, user) {
 								rows += row(user);
-							})
+							});
 							$("table tbody").append(rows);
 						}
 					});
@@ -46,21 +46,8 @@
 
 				var row = function(user) {
 					return "<tr data-rowid='" + user._id + "'><td>" + user._id + "</td>" +
-                 "<td>" + user.login + "</td> <td>" + user.pass + "</td>" +
-                 "<td><a class='editLink' data-id='" + user._id + "'>Изменить</a> | " +
-                 "<a class='removeLink' data-id='" + user._id + "'>Удалить</a></td></tr>";
+                 "<td>" + user.login + "</td> <td>" + user.pass + "</td>";
 				}
-
-				$("form").submit(function (e) {
-          e.preventDefault();
-          var id = this.elements["id"].value;
-          var name = this.elements["name"].value;
-          var age = this.elements["age"].value;
-          if (id == 0)
-						CreateUser(name, age);
-				  else
-            EditUser(id, name, age);
-				});
 				
 				getUsers();
 			</script>
