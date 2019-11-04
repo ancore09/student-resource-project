@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 	<html lang="en">
 		<head>
-    	<meta charset="UTF-8">
-    	<link rel="stylesheet" href="/styleLogin.css">
-    	<title>Document</title>
+			<meta charset="UTF-8">
+			<link rel="stylesheet" href="/styleLogin.css">
+			<title>Document</title>
 		</head>
 		<body>
 			<form class="form1" action="/chatReg" method="POST">
-      <input type="text" id="log" name="log" placeholder="login"><br>
-      <input type="password" id="pass" name="pass" placeholder="password"><br>
-      <input type="submit" id="sub" name="sub" value="Register">
-    </form>
+				<input type="text" id="log" name="log" placeholder="login"><br>
+				<input type="password" id="pass" name="pass" placeholder="password"><br>
+				<input type="submit" id="sub" name="sub" value="Register" onclick="saveNick()">
+			</form>
+			<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+			<script>
+				function saveNick() {
+					localStorage.setItem("nickname", $("#log").val());
+				}
+			</script>
 		</body>
 	</html>

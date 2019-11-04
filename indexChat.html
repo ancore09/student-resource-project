@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset="utf-8">
+			<link rel="stylesheet" href="/style.css">
+			<link rel="stylesheet" href="/styleChat.css">
+			<title></title>
+		</head>
+		<body>
+			<nav>
+				<a class="button1" onclick="document.forms['form1'].submit()">Main</a>
+				<form action="main" name="form1" method="get" style="display:none"></form>
+
+				<a class="button1" style="margin-left: 350px;" onclick="document.forms['form2'].submit()">Chat</a>
+				<form action="chat+logined" name="form2" method="post" style="display:none"></form>
+
+				<a class="button1" style="margin-left: 500px;" onclick="document.forms['form3'].submit()">Table</a>
+				<form action="table" name="form3" method="get" style="display:none"></form>
+
+				<a class="button1" style="margin-left: 650px;" onclick="document.forms['form4'].submit()">Profile</a>
+				<form action="profile+logined" name="form4" method="post" style="display:none"></form>
+			</nav>
+			<ul id="messages"></ul>
+			<form action="">
+				<input id="m" autocomplete="off"/>
+			</form>
+			<script src="/socket.io/socket.io.js"></script>
+			<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+			<script>
+				$(function () {
+					var socket = io();
+					$('form').submit(function (e) {
+						e.preventDefault(); // prevents page reloading
+						var nickname = localStorage.getItem("nickname");
+						document.getElementById('messages').scrollTop = 99999;
+						socket.emit('chat message', $('#m').val(), nickname);
+						$('#m').val('');
+						return false;
+					});
+					socket.on('chat message', function (msg, nick) {
+						$('#messages').append($('<li>').text(nick + ': ' + msg));
+						document.getElementById('messages').scrollTop = 99999;
+					});
+				});
+			</script>
+		</body>
+	</html>

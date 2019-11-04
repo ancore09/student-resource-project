@@ -23,13 +23,24 @@
 					$('#firstForm').remove();
 					console.log(column);
 					for(var i = 0; i < column; i++) {
-						$('table thead tr').append("<th onclick='edit(this)'>EditArea</th");
+						$('table thead tr').append("<th "+ "name='th'" + " onclick='edit(this)'>EditArea</th");
 					}
 					$('table').prop('border', '1px');
+					$('body').append('<form id="forma" action="/tableCreate/save" method="POST"><input type="text" id="thead" name="thead" style="display:none"><button type="submit" onclick="save()">Save</button></form>')
 				});
+
 				function edit(th) {
 					console.log(th.innerHTML);
 					th.innerHTML = prompt();
+				}
+
+				function save() {
+					var data = "";
+					$.each(document.getElementsByName("th"), function(index, el) {
+						data += "<th>" + el.innerHTML + "</th>";
+					});
+					console.log(data);
+					$('#thead').val(data);
 				}
 			</script>
 		</body>

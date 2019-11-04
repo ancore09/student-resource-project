@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 //const jsonParser = express.json();
 const urlencodedParser = bodyParser.urlencoded({extended: false});
 var http = require('http').createServer(app);
-//var io = require('socket.io')(http);
+var io = require('socket.io')(http);
 var port = 3000;
 const MongoClient = require('mongodb').MongoClient;
 const objectId = require('mongodb').ObjectID;
@@ -42,7 +42,7 @@ app.post('/chatReg', urlencodedParser, function(request, response) {
             console.log(result.ops);
             client.close();
             nickname = user.login + " ";
-            response.sendFile(__dirname + '/chat.html');
+            response.sendFile(__dirname + '/indexChat.html');
         });
       } else {
         response.end("Choose another login or password");
@@ -71,15 +71,34 @@ app.post("/chat", urlencodedParser, function (request, response) {
         response.end("Invalid data, double-check your login and password");
       } else {
         nickname = doc.login + " ";
-        response.sendFile(__dirname + '/chat.html');
+        response.sendFile(__dirname + '/indexChat.html');
         client.close();
       }
     });
   });
 });
 
-app.get('/about', function(req, res) {
-  res.sendFile(__dirname + '/index1.html');
+app.post("/chat:logined", urlencodedParser, function (request, response) {
+  response.sendFile(__dirname + '/indexChat.html');
+});
+
+app.get('/main', function(req, res) {
+  res.sendFile(__dirname + '/indexMain.html');
+});
+
+app.get('/main/news', function(req, res) {
+  const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
+  mongoClient.connect(function(err, client) {
+    if (err) return console.log(err);
+    const db = client.db("newsdb");
+    const collection = db.collection("news");
+    collection.find().toArray(function(err, news) {
+      if (err) return console.log(err);
+      //console.log(news);
+      res.send(news);
+      client.close();
+    });
+  });
 });
 
 app.get('/table', function(req, res) {
@@ -87,10 +106,53 @@ app.get('/table', function(req, res) {
 });
 
 app.get('/tableCreate', function(req, res) {
-  res.sendFile(__dirname + 'tableCreate.html');
+  res.sendFile(__dirname + '/tableCreate.html');
 });
 
-app.get('/users', function(req, res) {
+app.post('/tableCreate/save', urlencodedParser, function(req, res) {
+  console.log(req.body.thead);
+  const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
+  mongoClient.connect(function(err, client){
+    if (err) return console.log(err);
+    const db = client.db("tabledb");
+    const collection = db.collection("table");
+    collection.insertOne({thead: req.body.thead}, function(err, result) {
+      if (err) return console.log(err);
+      console.log(result.ops);
+      client.close();
+    });
+  });
+});
+
+app.get('/getTable', function(req, res) {
+  const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
+  mongoClient.connect(function(err, client) {
+    if (err) return console.log(err);
+    var db = client.db("tabledb");
+    var collection = db.collection("table");
+    var theadRes;
+    collection.find().toArray(function(err, thead) {
+      if (err) return console.log(err);
+      theadRes = thead;
+      //console.log(thead);
+      //client.close();
+    });
+
+    db = client.db("userdb");
+    collection = db.collection("users");
+    collection.find().toArray(function(err, users){
+      if (err) return console.log(err);
+      var response = {
+        users: users,
+        thead: theadRes
+      }
+      res.send(response);
+    });
+    client.close();
+  });
+});
+
+/*app.get('/users', function(req, res) {
   const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
   mongoClient.connect(function(err, client) {
     if (err) return console.log(err);
@@ -102,14 +164,14 @@ app.get('/users', function(req, res) {
       client.close();
     });
   });
-});
-
-/*io.on('connection', function(socket) {
-  socket.username = nickname;
-    socket.on('chat message', function(msg) {
-        io.emit('chat message', msg, socket.username);
-    });
 });*/
+
+io.on('connection', function(socket) {
+  //socket.username = nickname;
+    socket.on('chat message', function(msg, nickname) {
+        io.emit('chat message', msg, nickname);
+    });
+});
 http.listen(port, function(){
-  console.log('listening on *:' + port);
+  console.log('listening on localhost:' + port);
 });

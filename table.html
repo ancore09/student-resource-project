@@ -23,13 +23,48 @@
 			</form>-->
 			<table border="1px">
 				<thead>
-					<tr><th>Id</th><th>Login</th><th>Password</th></tr>
+					<tr><th>Name\Credit</th></tr>
 				</thead>
 				<tbody>
 				</tbody>
 			</table>
 			<script>
-				function getUsers() {
+				function getTable() {
+					$.ajax({
+						url: "/getTable",
+						type: 'GET',
+						contentType: 'application/json',
+						success: function(response) {
+							thed = response.thead;
+							users = response.users;
+							//console.log(thed.length);
+							var len = thed.length - 1;
+							$("table thead tr").append(thed[len].thead);
+							//console.log(document.getElementsByTagName("th").length-1);
+							var rows = "";
+							$.each(users, function(index, user) {
+								rows += row(user, document.getElementsByTagName("th").length-1);
+							});
+							$("table tbody").append(rows);
+						}
+					});
+				}
+
+				var row = function(user, am) {
+					var res = "<tr data-rowid='" + user._id + "'><td>" + user.login + "</td>";
+					for (let i = 0; i < am; i++) {
+						res += "<td id='datacell' onclick='setMark(this)'></td>";
+					}
+					res += "</tr>";
+					return res;
+				}
+
+				function setMark(cell) {
+					cell.innerHTML = prompt();
+				}
+
+				getTable();
+				/*function getUsers() {
 					$.ajax({
 						url: "/users",
 						type: "GET",
@@ -49,7 +84,7 @@
                  "<td>" + user.login + "</td> <td>" + user.pass + "</td>";
 				}
 				
-				getUsers();
+				getUsers();*/
 			</script>
 		</body>
 	</html>
