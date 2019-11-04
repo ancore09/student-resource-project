@@ -3,24 +3,24 @@
 		<head>
 			<meta charset="UTF-8">
 			<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+			<link rel="stylesheet" href="/style.css">
+			<link rel="stylesheet" href="/styleTable.css">
 			<title>Document</title>
 		</head>
 		<body>
-			<!--<form name="userForm">
-				<input type="hidden" name="id" value="0" />
-				<div class="form-group">
-						<label for="login">Login</label>
-						<input class="form-control" name="name" />
-				</div>
-				<div class="form-group">
-						<label for="pass">Password</label>
-						<input class="form-control" name="age" />
-				</div>
-				<div class="panel-body">
-						<button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
-						<a id="reset" class="btn btn-sm btn-primary">Сбросить</a>
-				</div>
-			</form>-->
+			<nav>
+				<a class="button1" onclick="document.forms['form1'].submit()">Main</a>
+				<form action="main" name="form1" method="get" style="display:none"></form>
+		
+				<a class="button1" style="margin-left: 350px;" onclick="document.forms['form2'].submit()">Chat</a>
+				<form action="chat+logined" name="form2" method="post" style="display:none"></form>
+		
+				<a class="button1" style="margin-left: 500px;" onclick="document.forms['form3'].submit()">Table</a>
+				<form action="table" name="form3" method="get" style="display:none"></form>
+		
+				<a class="button1" style="margin-left: 650px;" onclick="document.forms['form4'].submit()">Profile</a>
+				<form action="profile+logined" name="form4" method="post" style="display:none"></form>
+			</nav>
 			<table border="1px">
 				<thead>
 					<tr><th>Name\Credit</th></tr>
