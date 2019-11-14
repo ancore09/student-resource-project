@@ -1,10 +1,11 @@
 #news {
     list-style-type: none; 
-    margin: 100px; 
+    margin: 100px;
+    margin-bottom: 0px; 
     padding: 0; 
     padding-bottom: 0px;
     overflow: scroll;
-    height: 800px;
+    height: 700px;
     border: #1071FF 1px solid; 
 }
 
