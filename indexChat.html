@@ -28,6 +28,22 @@
 			<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 			<script>
 				$(function () {
+					$.ajax({
+						url: '/getMessages',
+						type: 'GET',
+						contentType: 'application/json',
+						success: function(response) {
+							//console.log("jabxhabca")
+							$.each(response, function(index, res) {
+								if (res.nick == "Anco") {
+									$('#messages').append($('<li style="color: red;">').text(res.nick + ': ' + res.body));
+								} else {
+									$('#messages').append($('<li>').text(res.nick + ': ' + res.body));
+								}
+
+							});
+						}
+					});
 					var socket = io();
 					$('form').submit(function (e) {
 						e.preventDefault(); // prevents page reloading
@@ -38,10 +54,29 @@
 						return false;
 					});
 					socket.on('chat message', function (msg, nick) {
-						$('#messages').append($('<li>').text(nick + ': ' + msg));
+						if (nick == "Anco") {
+							$('#messages').append($('<li style="color: red;">').text(nick + ': ' + msg));
+						} else {
+							$('#messages').append($('<li>').text(nick + ': ' + msg));
+						}
 						document.getElementById('messages').scrollTop = 99999;
 					});
 				});
+
+				/*function getMes() {
+					$.ajax({
+						url: '/getMessages',
+						type: 'GET',
+						contentType: 'application.json',
+						success: function(response) {
+							//console.log("jabxhabca")
+							$.each(response, function(index, res) {
+								$('#messages').append($('<li>').text(res.nick + ': ' + res.body));
+							});
+						}
+					});
+				}
+				getMes();*/
 			</script>
 		</body>
 	</html>

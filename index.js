@@ -9,7 +9,7 @@ var port = 3000;
 const MongoClient = require('mongodb').MongoClient;
 const objectId = require('mongodb').ObjectID;
 
-var nickname;
+const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true}, {poolSize: 0});
 
 app.use(express.static('public'));
 
@@ -28,7 +28,7 @@ app.post('/chatReg', urlencodedParser, function(request, response) {
     login: request.body.log,
     pass: request.body.pass
   }
-  const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
+  
   mongoClient.connect(function(err, client) {
     if (err) return console.log(err);
     const db = client.db("userdb");
@@ -52,13 +52,14 @@ app.post('/chatReg', urlencodedParser, function(request, response) {
 });
 
 app.post("/chat", urlencodedParser, function (request, response) {
+  const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
   if(!request.body) return response.sendStatus(400);
   console.log(request.body);
   var user = {
     login: request.body.log,
     pass: request.body.pass
   };
-  const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
+  
   mongoClient.connect(function(err, client) {
     if (err) return console.log(err);
     const db = client.db("userdb");
@@ -111,7 +112,7 @@ app.get('/tableCreate', function(req, res) {
 
 app.post('/tableCreate/save', urlencodedParser, function(req, res) {
   console.log(req.body.thead);
-  const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
+  
   mongoClient.connect(function(err, client){
     if (err) return console.log(err);
     const db = client.db("tabledb");
@@ -152,8 +153,9 @@ app.get('/getTable', function(req, res) {
   });
 });
 
+
 /*app.get('/users', function(req, res) {
-  const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
+  
   mongoClient.connect(function(err, client) {
     if (err) return console.log(err);
     const db = client.db("userdb");
@@ -167,11 +169,52 @@ app.get('/getTable', function(req, res) {
 });*/
 
 io.on('connection', function(socket) {
-  //socket.username = nickname;
+  //const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true}, {poolSize: 0});
     socket.on('chat message', function(msg, nickname) {
-        io.emit('chat message', msg, nickname);
+      io.emit('chat message', msg, nickname);
+      saveMes(msg, nickname);  
+    });
+
+    socket.on('disconnect', function() { 
+      console.log("disconnected");
+      //mongoClient.close(true);
     });
 });
+
+app.get('/getMessages', function(req, res) {
+  const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
+  mongoClient.connect(function(err, client) {
+    if (err) return console.log(err);
+    db = client.db('messages');
+    collection = db.collection("messages");
+    collection.find().toArray(function(err, messages) {
+      if (err) return console.log(err);
+      res.send(messages);
+    });
+  });
+  
+});
+
 http.listen(port, function(){
   console.log('listening on localhost:' + port);
 });
+
+function closeConnect(con) {
+  con.close(true);
+  //setTimeout(function() { con.close(); }, 6000);
+}
+
+function saveMes(msg, nickname) {
+  const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
+  mongoClient.connect(function(err, client) {
+    if (err) return console.log(err);
+    client.db("messages").collection("messages").insertOne({ nick: nickname, body: msg}, function(err, result) {
+      if (err) {
+        client.close();
+        return console.log(err);
+      }
+      console.log(result.ops);
+      client.close();
+    });  
+  });
+}
