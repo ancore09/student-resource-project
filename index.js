@@ -7,9 +7,9 @@ var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var port = 3000;
 const MongoClient = require('mongodb').MongoClient;
-const objectId = require('mongodb').ObjectID;
+//const objectId = require('mongodb').ObjectID;
 
-const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true}, {poolSize: 0});
+//const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true}, {poolSize: 0});
 
 app.use(express.static('public'));
 
@@ -28,7 +28,7 @@ app.post('/chatReg', urlencodedParser, function(request, response) {
     login: request.body.log,
     pass: request.body.pass
   }
-  
+  const mongoClient = new MongoClient("mongodb://localhost:27017/", {useNewUrlParser: true});
   mongoClient.connect(function(err, client) {
     if (err) return console.log(err);
     const db = client.db("userdb");
@@ -190,6 +190,7 @@ app.get('/getMessages', function(req, res) {
     collection.find().toArray(function(err, messages) {
       if (err) return console.log(err);
       res.send(messages);
+      client.close();
     });
   });
   
